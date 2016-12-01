@@ -2,21 +2,25 @@ exports = typeof window === 'undefined' ? global : window;
 
 exports.countAnswers = {
   count: function (start, end) {
-    var timeout;
-    function doIt () {
-      console.log(start++); // eslint-disable-line no-console
 
-      if (start <= end) {
-        timeout = setTimeout(doIt, 100);
-      }
+    var counter = {},
+        count = start,
+        timer = setInterval(doCount, 100);
+
+    counter.cancel = cancel;
+
+    return counter;
+
+    function doCount() {
+      console.log(count);
+      count++;
+      (count > end) && clearInterval(timer)
     }
 
-    doIt();
+    function cancel() {
 
-    return {
-      cancel: function () {
-        timeout && clearTimeout(timeout);
-      }
-    };
+      (timer !== null) && clearInterval(timer);
+      timer = null;
+    }
   }
 };

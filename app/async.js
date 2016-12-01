@@ -1,25 +1,40 @@
-/* global $ */
 exports = typeof window === 'undefined' ? global : window;
 
 exports.asyncAnswers = {
-  async: function(value) {
-    var dfd = $.Deferred();
-    setTimeout(function() {
-      dfd.resolve(value);
-    }, 10);
-    return dfd.promise();
-  },
+    async: function (value) {
 
-  manipulateRemoteData: function(url) {
-    var dfd = $.Deferred();
+        return new Promise(function (resolve) {
 
-    $.ajax(url).then(function(resp) {
-      var people = $.map(resp.people, function(person) {
-        return person.name;
-      });
-      dfd.resolve(people.sort());
-    });
+            resolve(value);
+        });
+    },
 
-    return dfd.promise();
-  }
+    manipulateRemoteData: function (url) {
+
+        return new Promise(function (resolve) {
+
+            httpRequest = new XMLHttpRequest();
+            httpRequest.onreadystatechange = sendNames;
+            httpRequest.open('GET', url);
+            httpRequest.send(null);
+
+            function sendNames() {
+
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    var response = JSON.parse(httpRequest.responseText),
+                        people = response.people,
+                        names = [];
+
+                    for (var i = 0; i < people.length; i++) {
+
+                        names.push(people[i].name);
+                    }
+
+                    names.sort();
+
+                    resolve(names);
+                }
+            }
+        });
+    }
 };

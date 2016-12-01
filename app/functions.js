@@ -2,43 +2,57 @@ exports = typeof window === 'undefined' ? global : window;
 
 exports.functionsAnswers = {
   argsAsArray: function(fn, arr) {
+
     return fn.apply(null, arr);
   },
 
   speak: function(fn, obj) {
-    return fn.call(obj);
+
+    return fn.apply(obj);
   },
 
   functionFunction: function(str) {
-    return function(arg) {
-      return str + ', ' + arg;
-    };
+
+    result = [];
+    result.push(str);
+
+    return function (str) {
+
+      result.push(str);
+
+      return result.join(', ');
+    }
   },
 
   makeClosures: function(arr, fn) {
-    var ret = [];
 
-    var makeFn = function(val) {
-      return function() { return fn(val); };
-    };
+    var closures = [];
 
-    for (var i = 0, len = arr.length; i < len; i++) {
-      ret.push(makeFn(arr[i]));
+    for(var i=0;i<arr.length;i++) {
+
+      closures.push(function () {
+
+        var val = arr[i];
+        return fn(val);
+      });
     }
 
-    return ret;
+    return closures;
   },
 
   partial: function(fn, str1, str2) {
-    return function(str3) {
+
+    return function (str3) {
+
       return fn(str1, str2, str3);
-    };
+    }
   },
 
   useArguments: function() {
+
     var sum = 0;
 
-    for (var i = 0, len = arguments.length; i < len; i++) {
+    for(var i=0; i<arguments.length; i++) {
       sum += arguments[i];
     }
 
@@ -46,37 +60,17 @@ exports.functionsAnswers = {
   },
 
   callIt: function(fn) {
-    var args = Array.prototype.slice.call(arguments, 1, arguments.length);
+
+    arguments.slice(0,1);
+
     fn.apply(null, args);
   },
 
   partialUsingArguments: function(fn) {
-    var args = Array.prototype.slice.call(arguments, 1, arguments.length);
-    return function() {
-      var moreArgs = args.concat(Array.prototype.slice.call(arguments));
-      return fn.apply(null, moreArgs);
-    };
+
   },
 
   curryIt: function(fn) {
-    function applyArguments(_fn, args) {
-      return _fn.apply(null, args);
-    }
 
-    function getArgumentAccumulator(accumulatedArguments, expectedArgumentsCount) {
-      return function (currentArgument) {
-        accumulatedArguments.push(currentArgument);
-
-        var allArgumentsProvided = accumulatedArguments.length === expectedArgumentsCount;
-
-        if (allArgumentsProvided) {
-          return applyArguments(fn, accumulatedArguments);
-        }
-
-        return getArgumentAccumulator(accumulatedArguments, expectedArgumentsCount);
-      };
-    }
-
-    return getArgumentAccumulator([], fn.length);
   }
 };

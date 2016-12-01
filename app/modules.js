@@ -1,14 +1,20 @@
 exports = typeof window === 'undefined' ? global : window;
 
 exports.modulesAnswers = {
-  createModule: function(str1, str2) {
-    return {
-      sayIt: function() {
-        return this.greeting + ', ' + this.name;
-      },
+    createModule: function (str1, str2) {
 
-      name: str2,
-      greeting: str1
-    };
-  }
+        var module = {};
+
+        module.name = 'matt';
+        module.greeting = 'hello';
+        module.sayIt = sayIt;
+
+        return module;
+
+        function sayIt() {
+
+            return module.greeting + ', ' + module.name;
+        }
+    }
+
 };
